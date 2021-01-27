@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>1d cube</title>
+</head>
+<body>
+    <h1>press keys 123456789 :)</h1>
+    <canvas id="ctx" width="1" height="1"></canvas><br />
+    <button onclick="scramble()">scramble</button>
+    <p>enter number of faces (2-9):</p><input type="text" id="nfaces"/><button onclick="init(parseInt(nfaces.value))">submit</button>
+    <script>
+        const colors = ["black", "red", "blue", "white", "orange", "green", "yellow", "purple", "grey", "pink"];
+        var colors2 = [];
+        const size = 3;
+        var num = 0;
+        var scrambled = solving = false;
+        var nfaces = document.getElementById("nfaces");
+        var t = 0;
+        var c = document.getElementById("ctx");
+        var ctx = c.getContext("2d");
+        ctx.lineWidth = size / 3;
+        ctx.lineStyle = "000000";
+        var edges = [];
+        function swap(n) {
+            e1 = [edges[n - 1][1], edges[n - 1][0]];
+            e2 = [edges[n][1], edges[n][0]];
+            edges[n - 1] = e2;
+            edges[n] = e1;
+        }
+        function scramble(){
+            for(var i = 0; i<16; i++){
+                swap(Math.floor(Math.random()*num+1));
+            }
+            scrambled = true;
+            t = 0;
+        }
+        function init(n) {
+            ctx.clearRect(0, 0, 20 * (num + 1) * size, 10 * size);
+            num = n;
+            colors2 = [];
+            edges = [];
+            c.width = 20 * (num + 1) * size;
+            c.height = 10 * size;
+            for (i = 0; i < num + 2; i++) {
+                edges.push([i, i + 1]);
+            }
+            for (var i = 0; i < num + 1; i++) {
+                colors2.push(colors[i]);
+            }
+            colors2.push("black");
+        }
+        init(4);
+        const dt = 0.01;
+        setInterval(function () {
+            ctx.clearRect(0, 0, 20 * (num + 1) * size, 10 * size);
+            for (var i = 0; i < num + 1; i++) {
+                ctx.fillStyle = colors2[edges[i][0]];
+                ctx.fillRect(20 * i * size, 0, 5 * size, 10 * size);
+                ctx.fillStyle = colors2[edges[i][1]];
+                ctx.fillRect((20 * i + 5) * size, 0, 5 * size, 10 * size);
+                ctx.fillStyle = colors2[i + 1];
+                if (i != num) {
+                    ctx.fillRect((20 * i + 10) * size, 0, 10 * size, 10 * size);
+                    ctx.beginPath();
+                    ctx.moveTo((20 * i + 10) * size, 0);
+                    ctx.lineTo((20 * i + 10) * size, 10 * size);
+                    ctx.moveTo((20 * i + 20) * size, 0);
+                    ctx.lineTo((20 * i + 20) * size, 10 * size);
+                    ctx.stroke();
+                }
+            }
+        }, dt);
+        document.onkeypress = function (e) {
+            n = e.keyCode - 48;
+            if (n > 0 && n <= num) {
+                swap(n);
+            }
+        }
+    </script>
+</body>
+</html>
